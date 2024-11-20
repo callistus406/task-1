@@ -20,6 +20,8 @@ import {
 import { IQuery } from "../../@types/types";
 import { isValidObjectId } from "mongoose";
 import { transcode } from "buffer";
+import { transactionNotificationTemplate } from "../../utils/templates_files/transactionTemplate";
+import sendMail from "../../utils/sendMail";
 
 export const depositMoneyService = async (
   userId: mongooseType,
@@ -100,16 +102,16 @@ export const adminFindTransactionService = async (
 };
 
 export const adminHandleTransactionService = async (
-  transactionId: any,
+  transactionId: mongooseType,
   adminId: mongooseType,
-  action: "approve" | "reject"
+  action: string
 ) => {
   const state = ["approve", "reject"];
-  if (!action.includes(action.toLowerCase())) {
-    throw createCustomError(`Must be either of the following ${state}`, 422);
+  if (!state.includes(action.toLowerCase())) {
+    throw createCustomError(`Must be either of the following: ${state.join(", ")}`, 422);
   }
   if (!action) {
-    throw createCustomError("action is required.", 422);
+    throw createCustomError("Action is required.", 422);
   }
   if (!transactionId || !isValidObjectId(transactionId)) {
     throw createCustomError("Invalid transaction ID.", 422);
@@ -125,11 +127,13 @@ export const adminHandleTransactionService = async (
     throw createCustomError("Invalid transaction type.", 400);
   }
 
+  let status;
+
   if (action === "approve") {
     transaction.status = "APPROVED";
     transaction.admin = adminId;
-    const wallet = await findUserWallet(transaction.wallet);
 
+    const wallet = await findUserWallet(transaction.wallet);
     if (!wallet) throw createCustomError("Wallet not found.", 404);
 
     if (transaction.type === "DEPOSIT") {
@@ -146,18 +150,42 @@ export const adminHandleTransactionService = async (
 
     await transaction.save();
     await wallet.save();
-
-    return  "Transaction approved and wallet updated."
+    status = "APPROVED";
   } else if (action === "reject") {
     transaction.status = "REJECTED";
     transaction.admin = adminId;
     await transaction.save();
-
-    return "Transaction rejected.";
+    status = "REJECTED";
   } else {
     throw createCustomError("Invalid action provided.", 400);
   }
+
+  const userEmail = (transaction.user as any)?.email;
+  const userName = (transaction.user as any)?.last_name;
+
+  const successMessage = `Transaction ${action}d successfully.`;
+
+  setImmediate(async () => {
+    try {
+      await sendMail({
+        subject: `Transaction ${status}`,
+        userEmail,
+        cb: transactionNotificationTemplate,
+        emailInfo: {
+          userName,
+          transactionType: transaction.type,
+          amount: transaction.amount,
+          status,
+        },
+      });
+    } catch (error) {
+      console.error("Error sending email:", error.message);
+    }
+  });
+
+  return successMessage;
 };
+
 
 export const requestWithdrawalService = async (
   userId: mongooseType,

@@ -9,6 +9,15 @@ export const transactionNotificationTemplate = ({
   amount: number;
   status: "APPROVED" | "REJECTED"|string;
 }) => {
+
+
+    console.log("======================================")
+    console.log({
+        userName,
+        transactionType,
+        amount,
+        status,
+      })
   const transactionAction =
     status === "APPROVED" ? "successfully approved" : "rejected";
 
@@ -80,7 +89,7 @@ export const transactionNotificationTemplate = ({
                   <p>Thank you for using our services!</p>
               </div>
               <div class="footer">
-                  &copy; ${new Date().getFullYear()} Your Company. All rights reserved.
+                  &copy; ${new Date().getFullYear()} Your Callistus. All rights reserved.
               </div>
           </div>
       </body>

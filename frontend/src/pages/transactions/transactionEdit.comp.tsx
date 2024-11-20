@@ -140,7 +140,7 @@ const TransactionEdit: FC = () => {
             <CustomInputField
               methods={methods}
               fieldName="type"
-              label="Tx Type"
+              label="Transaction Type"
               placeholder="E.g Bell"
               errorMsg="TX Type  is required"
               isDisabled={true}
@@ -172,7 +172,6 @@ const TransactionEdit: FC = () => {
               fieldName="status"
               label="Status"
               options={statusOptions}
-          
               errorMsg="Status is required"
             />
         
