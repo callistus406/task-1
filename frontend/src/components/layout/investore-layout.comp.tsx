@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { AdminSideBar } from "./adminSidebar.comp";
 import { Header } from "./header.comp";
-import Layout from "./investore-layout.comp";
+import { InvestorSideBar } from "./investoreSidebar.comp";
 
 
-const AdminLayout: React.FC = () => {
+const InvestorLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   const toggleSidebar = () => {
@@ -16,7 +15,7 @@ const AdminLayout: React.FC = () => {
     <main className="flex flex-col h-screen overflow-hidden">
       <Header onToggleSidebar={toggleSidebar} />
       <div className="flex flex-row min-h-screen">
-        <AdminSideBar
+        <InvestorSideBar
           onToggleSidebar={toggleSidebar}
           isSidebarOpen={isSidebarOpen}
         />
@@ -28,4 +27,4 @@ const AdminLayout: React.FC = () => {
   );
 };
 
-export default AdminLayout;
+export default InvestorLayout;

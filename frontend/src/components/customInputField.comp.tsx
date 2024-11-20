@@ -1,17 +1,16 @@
 import { ErrorMessage } from "@hookform/error-message";
-// import ErrorMessage from "../../@types/ErrorMessage";
 import React, { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, RegisterOptions } from "react-hook-form";
 
 interface InputProps {
   fieldName: string;
   placeholder: string;
   label: string;
   methods: UseFormReturn<any, any>;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   errorMsg?: string;
   type?: string;
-  pattern?: { value: RegExp; message: string };
+  rules?: RegisterOptions; // Accept pattern, required, etc.
   className?: string;
   isDisabled?: boolean;
 }
@@ -23,7 +22,7 @@ const CustomInputField: React.FC<InputProps> = ({
   errorMsg,
   type,
   placeholder,
-  pattern,
+  rules,
   className,
   isDisabled = false,
 }) => {
@@ -32,12 +31,12 @@ const CustomInputField: React.FC<InputProps> = ({
   return (
     <div className="relative w-full max-w-sm">
       <input
-        type={type ? type : "text"}
+        type={type || "text"}
         value={methods.watch(fieldName)}
         disabled={isDisabled}
         {...methods.register(fieldName, {
           required: errorMsg,
-          pattern: pattern,
+          ...rules, // Merge the validation rules
         })}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
@@ -45,8 +44,7 @@ const CustomInputField: React.FC<InputProps> = ({
         className={`${className} block w-full px-4 py-2 border-2 border-gray-300 rounded-md bg-white focus:outline-none focus:ring-0 focus:border-blue-500 transition-all peer`}
       />
       <label
-        className={` absolute left-4 px-1 bg-white transition-all duration-300
-        ${
+        className={`absolute left-4 px-1 bg-white transition-all duration-300 ${
           focused
             ? "top-[-10px] text-sm text-blue-500"
             : "top-[-10px] text-sm text-gray-500"
@@ -57,7 +55,7 @@ const CustomInputField: React.FC<InputProps> = ({
       <ErrorMessage
         errors={methods.formState.errors}
         name={fieldName}
-        render={({ message }: { message: any }) => (
+        render={({ message }: { message: string }) => (
           <div className="text-red-500">{message}</div>
         )}
       />

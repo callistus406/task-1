@@ -13,13 +13,33 @@ export const adminCreteInvestment = async (
   return response.data;
 };
 export const findInvestments = async (
-size= 10,page= 1, sort:string, sortDirection= 1,
+  url: string,
   token: string
 ) => {
-  const response = await axiosInstance.get(`/investments?size=${size}&sort=${sort}&sortDirection=${sortDirection}&page=${page}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axiosInstance.get(
+   url,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
+export const updateTransaction = async (
+  status: string,
+  transactionsId:string,
+  token: string
+) => {
+  const response = await axiosInstance.patch(
+    `/admin/update/transaction/${transactionsId}`,{action:status},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+

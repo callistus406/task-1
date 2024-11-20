@@ -31,6 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   const fnCall = useTokenInfo();
   const handleClick = (e: any) => {
     e.preventDefault();
+    
     setClicked(true);
   };
 
@@ -40,10 +41,11 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   });
   useEffect(() => {
     const data = fnCall(token as string);
-
+    if (data) {
   
-    if (data?.role === 4451) {
-      seLinks({
+      
+      if (data?.role === 4451) {
+        seLinks({
         dashboard: "/dashboard/admin",
         profile: "/profile",
       });
@@ -53,6 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
         profile: "/profile",
       });
     }
+  }
   }, []);
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);

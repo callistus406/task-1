@@ -18,7 +18,7 @@ interface DataTableProps<T extends object> {
   data: T[];
   title: string;
   metaData: {
-    limit: string;
+    size: string;
     page: string;
     total: number;
     pages: number;
@@ -46,7 +46,7 @@ const DataTable = <T extends object>({
     state: {
       sorting,
       globalFilter,
-      pagination, // Include pagination in state
+      pagination, 
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
@@ -114,6 +114,8 @@ const DataTable = <T extends object>({
       <div className="flex items-center justify-between mt-4 w-fit ml-auto gap-4">
         <span className="mr-4">
           Page{" "}
+
+         
           <strong>
             {metaData.page} of {metaData.pages}
           </strong>
@@ -128,7 +130,7 @@ const DataTable = <T extends object>({
         </Button>
         <Button
           onClick={() => {
-            // console.log(parseInt(metaData.page), "llllll");
+            console.log(metaData, "llllll");
             metaData.setPage(parseInt(metaData.page) + 1);
           }}
           // onClick={() =>

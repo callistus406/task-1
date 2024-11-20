@@ -4,7 +4,6 @@ interface ITableContext {
   children: ReactNode;
 }
 
-// Define the shape of your context state
 interface ITableContextValue {
   pages: number;
   total: number;
@@ -21,7 +20,6 @@ const TableContext = createContext<ITableContextValue>({
   size: 10,
 });
 
-// Context provider component
 export const TableContextProvider = ({ children }: ITableContext) => {
   const [page, setPage] = useState(1);
   const size = 10;

@@ -3,6 +3,8 @@ import { ColumnDef } from "@tanstack/react-table";
 
 
 import { InvestmentData } from "../../@types/type";
+import { EditResource, ViewResource } from "../actionButtons.comp";
+import { EditIcon } from "../../icons/table.icons";
 
 export const columns: ColumnDef<InvestmentData>[] = [
   {
@@ -21,6 +23,12 @@ export const columns: ColumnDef<InvestmentData>[] = [
   {
     accessorKey: "minimumAmount",
     header: "Min Amount",
+    cell: (info) => {
+      return new Intl.NumberFormat("en-NG", {
+        style: "currency",
+        currency: "NGN",
+      }).format(info.getValue() as any);
+    },
   },
   {
     accessorKey: "interestRate",
@@ -57,25 +65,19 @@ export const columns: ColumnDef<InvestmentData>[] = [
       });
     },
   },
-  // {
-  //   accessorKey: "actions",
-  //   header: "Actions",
-  //   cell: (info) => {
-  //     const studentId = info.row.original._id;
-  //     return (
-  //       <div className="flex gap-2 items-center">
-  //         <ViewResource modal="pupil" id={studentId} />
-  //         <EditResource url={`/students/edit/${studentId}`} />
-  //         <DeleteResource
-  //           id={studentId}
-  //           apiCall={deletePupil}
-  //           entity="admin"
-  //           queryKey="pupils-admin"
-  //         />
-  //       </div>
-  //     );
-  //   },
-  // },
+  {
+    accessorKey: "actions",
+    header: "Actions",
+    cell: (info) => {
+      const id = info.row.original._id;
+      return (
+        <div className="flex gap-2 items-center">
+          <EditResource url={`/plan-subscription/${id}`} />
+        
+        </div>
+      );
+    },
+  },
 ];
 
 // const EditResource = ({ id }: { id: string }) => {

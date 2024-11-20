@@ -147,8 +147,12 @@ const Profile: FC = () => {
               placeholder="Phone number"
               errorMsg="Phone number is required"
               handleChange={handleChange}
-              pattern={{ value: /^\+234\d{10}$/, message: "Invalid phone number" }}
-            />
+              rules={{
+                pattern: {
+                  value: /^\+234\d{10}$/,
+                  message: "Invalid phone number. Must start with '+234' followed by 10 digits.",
+                },
+              }}            />
           </div>
           <div className="ml-3 mt-6 md:ml-8 lg:ml-8  ">
             <label htmlFor="Submit"></label>

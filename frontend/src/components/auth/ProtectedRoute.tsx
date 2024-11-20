@@ -2,25 +2,27 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import LoadingPage from "../loader.comp";
 
+interface ProtectedRouteProps {
+  roles: number[]; 
+}
 
-const ProtectedRoute = ({ role }: { role: number }) => {
-  const { user, loading } = useAuth();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ roles }) => {
+  const { user, loading } = useAuth(); 
   const location = useLocation();
-console.log("======================================",user)
+
   if (loading) {
     return <LoadingPage />;
   }
-  return user && user?.role === role ? (
-    <Outlet />
-  ) : user && user.accessToken ? (
-    <Navigate to="/auth-error" state={{ from: location }} replace />
-  ) : (
-    <Navigate
-      to={role === 890 ? "/admin/sign-in" : "/sign-in"}
-      state={{ from: location }}
-      replace
-    />
-  );
+
+  if (user && roles.includes(user.user.role)) {
+    return <Outlet />;
+  }
+
+  if (user && user.accessToken) {
+    return <Navigate to="/auth-error" state={{ from: location }} replace />;
+  }
+
+  return <Navigate to="/sign-in" state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;

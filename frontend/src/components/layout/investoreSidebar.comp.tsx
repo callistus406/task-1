@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { adminMenuItems } from "../../data/layout.data"; 
+import { investorMenuItems } from "../../data/layout.data"; 
 import { DownIcon } from "../../icons/navigation.icons"; 
 
 interface SidebarProps {
@@ -8,7 +8,7 @@ interface SidebarProps {
   isSidebarOpen: boolean;
 }
 
-export const AdminSideBar: React.FC<SidebarProps> = ({
+export const InvestorSideBar: React.FC<SidebarProps> = ({
   isSidebarOpen,
   onToggleSidebar,
 }) => {
@@ -37,7 +37,7 @@ export const AdminSideBar: React.FC<SidebarProps> = ({
       }`}
     >
       <div id="me" className="flex flex-col gap-2">
-        {adminMenuItems.map((item, index) => (
+        {investorMenuItems.map((item, index) => (
           <div key={index} className="flex flex-col">
             <div
               className={`flex items-center justify-between cursor-pointer p-2 rounded-md transition-colors duration-500 ease-in-out ${
