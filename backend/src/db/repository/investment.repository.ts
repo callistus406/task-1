@@ -90,3 +90,19 @@ export const getInvestmentTotals = async () => {
 };
 
 
+
+export const getInvestmentStatistics = async () => {
+  const stats = await InvestmentPlanModel.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalPlans: { $sum: 1 },
+        averageInterestRate: { $avg: "$interestRate" },
+        totalMinimumAmount: { $sum: "$minimumAmount" },
+        averageDuration: { $avg: "$durationInMonths" },
+      },
+    },
+  ]);
+
+  return stats[0]; 
+};

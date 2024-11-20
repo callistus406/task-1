@@ -25,6 +25,7 @@ import {
   findTransactionsAnalytics,
 } from "../../core/transaction.core";
 import { FeMaleIcon, NairaIcon, PendingIcon } from "../../icons/icons";
+import { investmentStatistics } from "../../core/investments.core";
 
 export interface InvestmentTotal {
   _id: string | null;
@@ -70,7 +71,7 @@ const Dashboard: React.FC = () => {
     isLoading: l,
     error: analyticsError,
   } = useQuery({
-    queryKey: ["ee"],
+    queryKey: ["admin-analytics"],
     queryFn: () =>
       findTransactionsAnalytics(
         "/admin/transaction/analytics",
@@ -84,23 +85,30 @@ const Dashboard: React.FC = () => {
     isLoading: l1,
     data: data2,
   } = useQuery({
-    queryKey: ["token"],
+    queryKey: ["transaction-stat"],
     queryFn: () =>
       findAnalyticsCount("/admin/transaction/stat", token as string),
     enabled: !!token,
   });
+  const {
+    isError: e2,
+    isLoading: l3,
+    isFetched,
+    data: data3,
+  } = useQuery({
+    queryKey: ["investment"],
+    queryFn: () => investmentStatistics(token as string),
+    enabled: !!token,
+    staleTime: 0,
+  });
   const COLORS = ["#4CAF50", "#F44336", "#2196F3", "#FFC107"];
 
-  if (isLoading || l || l1) return <LoadingPage />;
-  if (error || e || analyticsError) {
-    return (
-      <ErrorScreen
-        message="An unexpected error occurred. Please try again."
-        onRetry={() => window.location.reload()}
-      />
-    );
-  }
-
+  const chartData = [
+    { name: "Total Plans", value: data3?.payload.totalPlans },
+    { name: "Avg Interest Rate", value: data3?.payload.averageInterestRate },
+    // { name: "Total Min Amount", value: data3?.payload.totalMinimumAmount },
+    { name: "Avg Duration", value: data3?.payload.averageDuration },
+  ];
   const analytics = data1?.payload;
 
   const areaData = analytics?.map((item: any) => ({
@@ -118,6 +126,18 @@ const Dashboard: React.FC = () => {
     }))
   );
 
+  if (isLoading || l || l1 || l3) {
+    return <LoadingPage />;
+  }
+  if (error || e || analyticsError || e2) {
+    return (
+      <ErrorScreen
+        message="An unexpected error occurred. Please try again."
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
   return (
     <div className="p-5">
       <div className="dashboard-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -126,7 +146,9 @@ const Dashboard: React.FC = () => {
           <div className="text-left">
             <h3 className="text-lg text-muted-foreground">All Transaction</h3>
             <p className="text-2xl font-bold">
-              {data2.payload.withdrawals+ data2.payload.pending + data2.payload.deposits}
+              {data2.payload.withdrawals +
+                data2.payload.pending +
+                data2.payload.deposits}
             </p>
           </div>
           <NairaIcon className="w-12 h-12 text-blue-500" />
@@ -160,62 +182,83 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
       <div className="bg-white px-4 py-8 rounded-md">
-      <h2 className="text-xl font-bold mb-4">Transaction Analytics</h2>
-      <div className="grid grid-cols-2">
-        {/* Area Chart */}
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={areaData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="type" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Area
-              type="monotone"
-              dataKey="PENDING"
-              stroke="#8884d8"
-              fill="#8884d8"
-            />
-            <Area
-              type="monotone"
-              dataKey="APPROVED"
-              stroke="#82ca9d"
-              fill="#82ca9d"
-            />
-            <Area
-              type="monotone"
-              dataKey="REJECTED"
-              stroke="#ffc658"
-              fill="#ffc658"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-
-        {/* Pie Chart */}
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={pieData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              fill="#8884d8"
-              label
-            >
-              {pieData.map((_: any, index: any) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
+        <h2 className="text-xl font-bold mb-4">Transaction Analytics</h2>
+        <div className="grid grid-cols-2">
+          {/* Area Chart */}
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={areaData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="type" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="PENDING"
+                stroke="#8884d8"
+                fill="#8884d8"
+              />
+              <Area
+                type="monotone"
+                dataKey="APPROVED"
+                stroke="#82ca9d"
+                fill="#82ca9d"
+              />
+              <Area
+                type="monotone"
+                dataKey="REJECTED"
+                stroke="#ffc658"
+                fill="#ffc658"
+              />
+            </AreaChart>
           </ResponsiveContainer>
+
+          {/* Pie Chart */}
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+                label
+              >
+                {pieData.map((_: any, index: any) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="text-xl font-bold mb-4 mt-4">
+            <h2>Investment Statistics Overview</h2>
+            <BarChart
+              width={600}
+              height={400}
+              data={chartData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#8884d8" />
+            </BarChart>
           </div>
+        </div>
       </div>
     </div>
   );

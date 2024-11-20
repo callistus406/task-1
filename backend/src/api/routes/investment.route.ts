@@ -5,12 +5,14 @@ import {
   adminCreateInvestment,
   adminFindInvestment,
   adminFindInvestments,
+  adminInvestmentStatisticsCtrl,
   adminUpdateInvestment,
 } from "../controller/investment.controller";
 import {
   filterQueryValidator,
   investmentPlanValidation,
 } from "../../middlewares/validator.mw";
+import { adminDashboardCtrl } from "../controller/dashboard.controller";
 
 const router = express.Router();
 
@@ -43,6 +45,14 @@ router.patch(
   AuthorizationMw.isAdmin,
   investmentPlanValidation,
   adminUpdateInvestment
+);
+router.get(
+  "/admin/inv/analytics",
+  AuthorizationMw.verifyJWT,
+  AuthorizationMw.ensureAuthenticated,
+  AuthorizationMw.isAdmin,
+  adminInvestmentStatisticsCtrl,
+
 );
 
 export default router;

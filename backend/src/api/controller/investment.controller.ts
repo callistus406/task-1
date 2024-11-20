@@ -1,4 +1,4 @@
-import { createInvestment } from "../../db/repository/investment.repository";
+import { createInvestment, getInvestmentStatistics } from "../../db/repository/investment.repository";
 import { Request, Response } from "../../@types/express";
 import { asyncWrapper } from "../../middlewares/asyncWrapper.mw";
 import {
@@ -9,6 +9,7 @@ import {
 import {
   findInvestmentService,
   findInvestmentsService,
+  getInvestmentStatisticsService,
   updateInvestmentPlanService,
 } from "../service/investment.service";
 import { IUpdateInvestmentPlan } from "../../@types/types";
@@ -72,6 +73,15 @@ export const adminUpdateInvestment = [
     const { investmentId } = req.params;
 
     const response = await updateInvestmentPlanService(data, investmentId);
+
+    res.status(200).json({ success: true, payload: response });
+  }),
+];
+export const adminInvestmentStatisticsCtrl = [
+  asyncWrapper(async (req: Request, res: Response) => {
+ 
+
+    const response = await getInvestmentStatisticsService();
 
     res.status(200).json({ success: true, payload: response });
   }),
