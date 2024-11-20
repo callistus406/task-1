@@ -13,7 +13,7 @@ The project uses the following roles:
 ## Starting the Project Locally
 To start the project locally, navigate to the root directory and run:
 
-```bash
+
 
 docker-compose up //spin up the containers
 
