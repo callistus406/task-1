@@ -1,7 +1,6 @@
 import express from "express";
 
 import auth from "./auth.route";
-import wallet from "./wallet.route";
 import transaction from "./transaction.route";
 import register from "./register.route";
 import investment from "./investment.route";
@@ -14,7 +13,6 @@ router.use(subscription);
 router.use(investment);
 router.use(auth);
 router.use(user);
-router.use(wallet);
 router.use(transaction);
 
 export default router;

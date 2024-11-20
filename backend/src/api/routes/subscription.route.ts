@@ -2,6 +2,7 @@ import express from "express";
 
 import AuthorizationMw from "../../middlewares/authorization.mw";
 import {
+  adminFindSubScriptionsCtrl,
   findSubScriptionsCtrl,
   subscribeTPlanCtrl,
   unSubscribeCtrl,
@@ -27,11 +28,11 @@ router.get(
   AuthorizationMw.isInvestor,
   findSubScriptionsCtrl
 );router.get(
-  "/plans/subscriptions",
+  "/admin/plans/subscriptions",
   AuthorizationMw.verifyJWT,
   AuthorizationMw.ensureAuthenticated,
   AuthorizationMw.isInvestor,
-  findSubScriptionsCtrl
+  adminFindSubScriptionsCtrl
 );
 router.delete(
   "/plan/unsubscribe/:subscriptionId",

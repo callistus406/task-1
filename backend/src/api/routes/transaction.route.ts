@@ -13,13 +13,13 @@ import { filterQueryValidator } from "../../middlewares/validator.mw";
 
 const router = express.Router();
 
-router.post(
-  "/admin/update-tx",
-  AuthorizationMw.verifyJWT,
-  AuthorizationMw.ensureAuthenticated,
-  AuthorizationMw.isAdmin,
-  adminHandleTransactionCtrl
-);
+// router.post(
+//   "/admin/update-tx",
+//   AuthorizationMw.verifyJWT,
+//   AuthorizationMw.ensureAuthenticated,
+//   AuthorizationMw.isAdmin,
+//   adminHandleTransactionCtrl
+// );
 
 router.get(
   "/transactions",

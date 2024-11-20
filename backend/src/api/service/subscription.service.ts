@@ -1,4 +1,5 @@
 import {
+    adminFindSubscriptions,
   createSubscription,
   deleteSubscription,
   findSubscription,
@@ -36,6 +37,27 @@ export const findSubscriptionsService = async (
   const skip = (page - 1) * size;
 
   const response = await findSubscriptions(preparedQuery, userId, skip);
+  return response;
+};
+export const adminFindSubscriptionsService = async (
+  query: IQuery,
+
+) => {
+  const size = Number(query?.size) || 10;
+  const page = Number(query?.page) || 1;
+  const sort = query?.sort || "_id";
+  const sortDirection = Number(query?.sortDirection) || -1;
+
+  const preparedQuery: IQuery = {
+    ...query,
+    size,
+    page,
+    sort,
+    sortDirection,
+  };
+  const skip = (page - 1) * size;
+
+  const response = await adminFindSubscriptions(preparedQuery,  skip);
   return response;
 };
 export const unSubscribeService = async (

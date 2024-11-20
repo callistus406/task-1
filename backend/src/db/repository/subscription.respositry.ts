@@ -32,6 +32,28 @@ export const findSubscriptions = async (
     pages: Math.ceil(totalDocuments / query.size),
   };
 };
+export const adminFindSubscriptions = async (
+  query: IQuery,
+ 
+  skip?: any
+) => {
+  const totalDocuments = await SubscriptionModel.countDocuments();
+  const subscriptions = await SubscriptionModel.find({  })
+    .sort({ [query.sort]: query.sortDirection as any })
+    .skip(skip)
+    .limit(query.size)
+    .exec();
+
+
+  return {
+    success: true,
+    subscriptions,
+    page: query.page,
+    size: query.size,
+    total: totalDocuments,
+    pages: Math.ceil(totalDocuments / query.size),
+  };
+};
 
 export const deleteSubscription = async (
   subscriptionId: string,
