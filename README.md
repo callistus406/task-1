@@ -106,7 +106,7 @@ The backend development is **90% complete**, with testing remaining. Below is a 
 ---
 
 ### Investment Management
-- **GET** `/investments`  
+- **GET** `/investments?page=1&size=10`  
   Retrieve all available investments.
 - **GET** `/admin/investment/:investmentId`  
   Retrieve details of a specific investment.
@@ -120,7 +120,7 @@ The backend development is **90% complete**, with testing remaining. Below is a 
 ### Subscription Management
 - **POST** `/plan/subscribe`  
   Subscribe to an investment plan.
-- **GET** `/plans/subscriptions`  
+- **GET** `/plans/subscriptions?page=1&size=10`  
   Retrieve all user subscriptions.
 - **DELETE** `/plan/unsubscribe/:subscriptionId`  
   Unsubscribe from a specific plan.
@@ -128,7 +128,7 @@ The backend development is **90% complete**, with testing remaining. Below is a 
 ---
 
 ### Transaction Management
-- **GET** `/transactions`  
+- **GET** `/transactions?page=1&size=10`  
   Retrieve all transactions for the user.
 - **POST** `/transaction/deposit`  
   Create a deposit transaction.
