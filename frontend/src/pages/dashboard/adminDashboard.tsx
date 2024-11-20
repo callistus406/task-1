@@ -183,7 +183,7 @@ const Dashboard: React.FC = () => {
       </div>
       <div className="bg-white px-4 py-8 rounded-md">
         <h2 className="text-xl font-bold mb-4">Transaction Analytics</h2>
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 lg:gap-x-8">
           {/* Area Chart */}
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={areaData}>
@@ -214,7 +214,7 @@ const Dashboard: React.FC = () => {
           </ResponsiveContainer>
 
           {/* Pie Chart */}
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" className="border" height={300}>
             <PieChart>
               <Pie
                 data={pieData}
@@ -228,6 +228,7 @@ const Dashboard: React.FC = () => {
               >
                 {pieData.map((_: any, index: any) => (
                   <Cell
+                    
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
                   />
