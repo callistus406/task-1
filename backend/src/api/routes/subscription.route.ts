@@ -7,9 +7,7 @@ import {
   subscribeTPlanCtrl,
   unSubscribeCtrl,
 } from "../controller/subscription.controller";
-import {
-  subscriptionValidation,
-} from "../../middlewares/validator.mw";
+import { subscriptionValidation } from "../../middlewares/validator.mw";
 
 const router = express.Router();
 
@@ -27,7 +25,8 @@ router.get(
   AuthorizationMw.ensureAuthenticated,
   AuthorizationMw.isInvestor,
   findSubScriptionsCtrl
-);router.get(
+);
+router.get(
   "/admin/plans/subscriptions",
   AuthorizationMw.verifyJWT,
   AuthorizationMw.ensureAuthenticated,
