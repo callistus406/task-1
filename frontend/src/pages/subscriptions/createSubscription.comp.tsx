@@ -67,7 +67,7 @@ const PlanSubscription: FC = () => {
         heading="Plan Subscription"
         section="Subscription"
         page="Create Subscription"
-        url="/subscriptions/list"
+        url="/subscriptions"
       >
         <form
           onSubmit={methods.handleSubmit(handleSubmit)}
@@ -83,6 +83,7 @@ const PlanSubscription: FC = () => {
               label="Investment Plan"
               placeholder="Enter Plan ID"
               errorMsg="Investment Plan is required"
+              isDisabled={true}
               type="text"
             />
             <CustomInputField

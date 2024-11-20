@@ -46,7 +46,7 @@ const Transactions: React.FC = () => {
   }
   return (
     <InnerLayout
-      heading="List Of Transactions"
+      heading="Transactions"
       section="Dashboard"
       page="Transactions"
       url="/dashboard/admin"

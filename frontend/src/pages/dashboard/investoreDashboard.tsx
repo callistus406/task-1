@@ -5,6 +5,7 @@ import {
   FeMaleIcon,
   GraduateIcon,
   NairaIcon,
+  PendingIcon,
 } from "../../icons/icons";
 import { Button } from "../../components/button.comp";
 import {
@@ -203,7 +204,7 @@ export const InvestorDashboard = () => {
             <h3 className="text-lg text-muted-foreground">Pending</h3>
             <p className="text-2xl font-bold">{data2.payload.pending}</p>
           </div>
-          <FeMaleIcon className="w-12 h-12 text-yellow-500" />
+          <PendingIcon className="w-12 h-12 text-yellow-500" />
         </div>
       </div>
 
