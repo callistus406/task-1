@@ -11,6 +11,11 @@ The project defines the following roles for managing access and functionalities:
   `INVESTOR_ROLE=1002`
 
 ---
+### ADMIN LOGIN CREDENTIIALS
+   ```bash
+email: admin@gmail.com
+passord: Qwerty123#
+   ```
 
 ## Starting the Project Locally
 
