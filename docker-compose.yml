@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile 
+    container_name: task_frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - task-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile 
+    container_name: task_backend
+    env_file:
+      - ./.env
+    ports:
+      - "5000:5000"
+    networks:
+      - task-network
+ 
+networks:
+  task-network:
+    driver: bridge

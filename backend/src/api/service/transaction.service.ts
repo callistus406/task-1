@@ -1,0 +1,208 @@
+import { createCustomError } from "../../middlewares/customErrorHandler";
+import { mongooseType } from "../../@types/express";
+import {
+  findUserWallet,
+  findWallet,
+} from "../../db/repository/wallet.repository";
+import {
+  adminFindAllTransactions,
+  adminFindTransactionById,
+  depositMoney,
+  findAllTransactions,
+  findTransaction,
+  withdrawMoney,
+} from "../../db/repository/transaction.repository";
+import { IQuery } from "../../@types/types";
+import { isValidObjectId } from "mongoose";
+import { transcode } from "buffer";
+
+export const depositMoneyService = async (
+  userId: mongooseType,
+  amount: number
+) => {
+  if (!amount) throw createCustomError("Amount is required", 422);
+  if (isNaN(amount)) throw createCustomError("Amount must be numeric", 422);
+
+  if (amount <= 0)
+    throw createCustomError("Deposit amount must be greater than zero.", 422);
+
+  const wallet = await findWallet(userId);
+  if (!wallet) throw createCustomError("Wallet not found.", 404);
+ 
+  const transaction = await depositMoney({
+    userId,
+    amount,
+    walletId: wallet._id,
+  });
+  return { message: "Deposit request submitted successfully.", transaction };
+};
+export const findAllTransactionService = async (
+  query: IQuery,
+  userId: mongooseType
+) => {
+  const size = Number(query?.size) || 10;
+  const page = Number(query?.page) || 1;
+  const sort = query?.sort || "_id";
+  const sortDirection = Number(query?.sortDirection) || -1;
+
+  const preparedQuery: IQuery = {
+    ...query,
+    size,
+    page,
+    sort,
+    sortDirection,
+  };
+  const skip = (page - 1) * size;
+  const response = await findAllTransactions(preparedQuery, userId, skip);
+  return response;
+};
+export const adminFindAllTransactionService = async (
+  query: IQuery,
+  userId: mongooseType
+) => {
+  const size = Number(query?.size) || 10;
+  const page = Number(query?.page) || 1;
+  const sort = query?.sort || "_id";
+  const sortDirection = Number(query?.sortDirection) || -1;
+
+  const preparedQuery: IQuery = {
+    ...query,
+    size,
+    page,
+    sort,
+    sortDirection,
+  };
+  const skip = (page - 1) * size;
+  const response = await adminFindAllTransactions(preparedQuery,  skip);
+  return response;
+};
+export const findTransactionService = async (
+  transactionId: mongooseType,
+  userId: mongooseType
+) => {
+  const response = await findTransaction(transactionId, userId);
+  return response;
+};
+
+export const adminHandleTransactionService = async (
+  transactionId: any,
+  adminId: mongooseType,
+  action: "approve" | "reject"
+) => {
+  const state = ["approve", "reject"];
+  if (!action.includes(action.toLowerCase())) {
+    throw createCustomError(`Must be either of the following ${state}`, 422);
+  }
+  if (!action) {
+    throw createCustomError("action is required.", 422);
+  }
+  if (!transactionId || !isValidObjectId(transactionId)) {
+    throw createCustomError("Invalid transaction ID.", 422);
+  }
+
+
+    const transaction = await adminFindTransactionById(transactionId);
+    if (!transaction) throw createCustomError("Transaction not found.", 404);
+    if (transaction.status !== "PENDING") {
+      throw createCustomError("Transaction is not pending.", 400);
+    }
+
+    if (!["DEPOSIT", "WITHDRAWAL"].includes(transaction.type)) {
+      throw createCustomError("Invalid transaction type.", 400);
+    }
+
+    if (action === "approve") {
+      transaction.status = "APPROVED";
+      transaction.admin = adminId; 
+
+      const wallet = await findUserWallet(transaction.wallet);
+      if (!wallet) throw createCustomError("Wallet not found.", 404);
+
+      if (transaction.type === "DEPOSIT") {
+        wallet.balance += transaction.amount; 
+      } else if (transaction.type === "WITHDRAWAL") {
+        if (wallet.balance < transaction.amount) {
+          throw createCustomError(
+            "Insufficient wallet balance for withdrawal.",
+            400
+          );
+        }
+        wallet.balance -= transaction.amount; 
+      }
+
+      await transaction.save();
+      await wallet.save();
+
+      return { message: "Transaction approved and wallet updated.", wallet };
+    } else if (action === "reject") {
+      transaction.status = "REJECTED";
+      transaction.admin = adminId; 
+      await transaction.save();
+
+      return { message: "Transaction rejected.", transaction };
+    } else {
+      throw createCustomError("Invalid action provided.", 400);
+    }
+
+};
+
+export const requestWithdrawalService = async (
+  userId: mongooseType,
+  amount: number
+) => {
+  if (!amount) throw createCustomError("Amount is required", 422);
+  if (isNaN(amount)) throw createCustomError("Amount must be numeric", 422);
+  if (amount <= 0)
+    throw new Error("Withdrawal amount must be greater than zero.");
+  const wallet = await findWallet(userId);
+  if (!wallet) throw createCustomError("Wallet not found.", 404);
+  if (wallet.balance < amount)
+    throw createCustomError("Insufficient balance.", 400);
+  const transaction = await withdrawMoney({
+    userId,
+    amount,
+    walletId: wallet._id,
+  });
+
+  return { message: "Withdrawal request submitted successfully.", transaction };
+};
+
+export const adminHandleWithdrawalApprovalService = async (
+  transactionId: mongooseType,
+  adminId: mongooseType,
+  action: "APPROVE" | "REJECT"
+) => {
+    const transaction = await adminFindTransactionById(transactionId);
+    if (!transaction) throw createCustomError("Transaction not found.", 404);
+    if (transaction.status !== "PENDING")
+      throw createCustomError("Transaction is not pending.", 400);
+
+    if (transaction.type !== "WITHDRAWAL")
+      throw createCustomError(
+        "Only withdrawal transactions can be managed.",
+        400
+      );
+
+    if (action === "APPROVE") {
+      const wallet = await findUserWallet(transaction.wallet);
+      if (!wallet) throw createCustomError("Wallet not found.", 404);
+      if (wallet.balance < transaction.amount)
+        throw createCustomError("Insufficient balance in the wallet.", 400);
+
+      wallet.balance -= transaction.amount;
+      await wallet.save();
+
+      transaction.status = "APPROVED";
+      transaction.admin = adminId;
+      await transaction.save();
+
+      return { message: "Withdrawal approved and wallet updated.", wallet };
+    } else if (action === "REJECT") {
+      transaction.status = "REJECTED";
+      transaction.admin = adminId;
+      await transaction.save();
+
+      return { message: "Withdrawal request rejected.", transaction };
+    }
+ 
+};
