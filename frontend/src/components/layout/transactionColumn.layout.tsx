@@ -72,7 +72,7 @@ export const columns: ColumnDef<Transaction>[] = [
       const id = info.row.original._id;
       return (
         <div className="flex gap-2 items-center">
-          <EditResource url={`/edit-transaction/${id}`} />
+          <EditResource  isAdmin={true} url={`/edit-transaction/${id}`} />
         </div>
       );
     },
