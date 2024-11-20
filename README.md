@@ -14,9 +14,14 @@ The project defines the following roles for managing access and functionalities:
 ### ADMIN LOGIN CREDENTIIALS
    ```bash
 email: admin@gmail.com
-passord: Qwerty123#
+passord: Qwerty124323
    ```
 
+ ###  EXISTING USER
+   ```bash
+email: callistus506@gmail.com
+passord: Qwerty123
+   ```
 ## Starting the Project Locally
 
 ### Without Containers
