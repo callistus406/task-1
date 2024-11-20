@@ -17,7 +17,7 @@ export const findSubscriptions = async (
 ) => {
   const totalDocuments = await SubscriptionModel.countDocuments();
   const subscriptions = await SubscriptionModel.find({ user: userId })
-    .sort({ [query.sort]: query.sortDirection as any }).populate("plan","name")
+    .sort({ [query.sort]: query.sortDirection as any }).populate("plan","name").populate("user","email")
     .skip(skip)
     .limit(query.size)
     .exec();
@@ -37,7 +37,7 @@ export const adminFindSubscriptions = async (
   skip?: any
 ) => {
   const totalDocuments = await SubscriptionModel.countDocuments();
-  const subscriptions = await SubscriptionModel.find({})
+  const subscriptions = await SubscriptionModel.find({}).populate("user","email")
     .populate("user", "first_name last_name email")
     .sort({ [query.sort]: query.sortDirection as any })
     .skip(skip)

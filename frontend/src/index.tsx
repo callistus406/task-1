@@ -23,9 +23,9 @@ root.render(
   <React.StrictMode>
 <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppErrorBoundary>
+        {/* <AppErrorBoundary> */}
           <App />
-        </AppErrorBoundary>
+        {/* </AppErrorBoundary> */}
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>

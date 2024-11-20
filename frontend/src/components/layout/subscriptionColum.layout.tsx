@@ -18,6 +18,15 @@ export const columns: ColumnDef<ISubscription>[] = [
         return <p>{user? user.name: ""} </p>;
       },
   }, 
+
+  {
+    accessorKey: "user",
+      header: "Subscriber",
+      cell: (info) => {
+        const user = info.getValue() as { email: string}; 
+        return <p>{user? user.email: ""} </p>;
+      },
+  },
   
   {
     accessorKey: "amount",

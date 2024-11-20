@@ -12,12 +12,38 @@ export const adminCreteInvestment = async (
   });
   return response.data;
 };
+export const adminUpdateInvestment = async (
+  data: ICreateInvestment,
+  id:string,
+  token: string
+) => {
+  const response = await axiosInstance.patch(`/admin/update/investment/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
 export const findInvestments = async (
   url: string,
   token: string
 ) => {
   const response = await axiosInstance.get(
    url,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+export const findInvestment = async (
+  id: string,
+  token: string
+) => {
+  const response = await axiosInstance.get(
+   `/admin/investment/${id}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

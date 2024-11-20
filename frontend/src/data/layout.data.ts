@@ -56,6 +56,12 @@ export const investorMenuItems: MenuItem[] = [
  
   },
 
+  {
+    label: "Subscriptions",
+    to: "/subscriptions",
+    icon: PaymentIcon,
+  },
+
 
 
   

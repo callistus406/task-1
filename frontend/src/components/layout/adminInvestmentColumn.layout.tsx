@@ -6,7 +6,7 @@ import { InvestmentData } from "../../@types/type";
 import { EditResource, ViewResource } from "../actionButtons.comp";
 import { EditIcon } from "../../icons/table.icons";
 
-export const columns: ColumnDef<InvestmentData>[] = [
+export const column2: ColumnDef<InvestmentData>[] = [
   {
     accessorKey: "id",
     header: "SN",
@@ -70,28 +70,10 @@ export const columns: ColumnDef<InvestmentData>[] = [
       const id = info.row.original._id;
       return (
         <div className="flex gap-2 items-center">
-          <EditResource url={`/plan-subscription/${id}`} />
+          <EditResource url={`/admin/edit-investment/${id}`} isAdmin={true} />
         
         </div>
       );
     },
   },
 ];
-
-// const EditResource = ({ id }: { id: string }) => {
-//   const navigate = useNavigate();
-
-//   // Handler to navigate to the edit page
-//   const handleEditClick = () => {
-//     navigate(`/students/edit/${id}`);
-//   };
-
-//   return (
-//     <button
-//       onClick={handleEditClick}
-//       className="h-8 w-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center"
-//     >
-//       <EditIcon />
-//     </button>
-//   );
-// };

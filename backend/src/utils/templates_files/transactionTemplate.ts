@@ -7,7 +7,7 @@ export const transactionNotificationTemplate = ({
   userName: string;
   transactionType: "DEPOSIT" | "WITHDRAWAL";
   amount: number;
-  status: "APPROVED" | "REJECTED";
+  status: "APPROVED" | "REJECTED"|string;
 }) => {
   const transactionAction =
     status === "APPROVED" ? "successfully approved" : "rejected";

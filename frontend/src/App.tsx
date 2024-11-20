@@ -21,6 +21,7 @@ import AdminLayout from "./components/layout/admin-layout.comp";
 import InvestorLayout from "./components/layout/investore-layout.comp";
 import PlanSubscription from "./pages/subscriptions/createSubscription.comp";
 import { InvestorDashboard } from "./pages/dashboard/investoreDashboard";
+import EditInvestment from "./pages/investments/editInvestment";
 
 const Login = lazy(() => import("./pages/auth/login.comp"));
 const NotFound = lazy(() => import("./pages/auth/notFound.comp"));
@@ -77,6 +78,10 @@ function App() {
           <Route
             path="/edit-transaction/:txId"
             element={<TransactionEdit />}
+              />
+              <Route
+            path="/admin/edit-investment/:id"
+            element={<EditInvestment />}
           />
           <Route
             path="/create-investment-plan"

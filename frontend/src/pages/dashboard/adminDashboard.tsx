@@ -159,6 +159,7 @@ const Dashboard: React.FC = () => {
           <PendingIcon className="w-12 h-12 text-yellow-500" />
         </div>
       </div>
+      <div className="bg-white px-4 py-8 rounded-md">
       <h2 className="text-xl font-bold mb-4">Transaction Analytics</h2>
       <div className="grid grid-cols-2">
         {/* Area Chart */}
@@ -213,7 +214,8 @@ const Dashboard: React.FC = () => {
             <Tooltip />
             <Legend />
           </PieChart>
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+          </div>
       </div>
     </div>
   );

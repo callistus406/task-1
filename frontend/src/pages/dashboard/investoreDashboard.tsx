@@ -143,7 +143,7 @@ export const InvestorDashboard = () => {
       {/* Header Section */}
       <header className="flex flex-col sm:flex-row justify-between items-center mb-6">
         <div className="text-2xl font-bold flex items-center">
-          Welcome Admin! <DashboardIcon className="ml-2" />
+          Welcome Investor! <DashboardIcon className="ml-2" />
         </div>
         <div className="text-sm text-gray-600 mt-2 sm:mt-0">
           Home / Dashboard
@@ -207,7 +207,7 @@ export const InvestorDashboard = () => {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 bg-white rounded-md">
         <h2 className="text-xl font-bold mb-4">Transaction Analytics</h2>
         <div className=" grid grid-cols-2">
           {/* Area Chart */}

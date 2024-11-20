@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import useAuthToken from "../hooks/useAuthToken";
-import { CloseModalIcon, DeleteIcon, IconWarning, LoadingIcon } from "../icons/icons";
+import { BellIcon, CloseModalIcon, DeleteIcon, IconWarning, LoadingIcon } from "../icons/icons";
 import { EditIcon, ViewIcon } from "../icons/table.icons";
 import useLogout from "../hooks/useLogout";
 import { getProfile } from "../core/auth.core";
@@ -131,7 +131,7 @@ const DeleteResource = ({
     </>
   );
 };
-const EditResource = ({ url }: { url: string }) => {
+const EditResource = ({ url ,isAdmin}: { url: string,isAdmin?:boolean }) => {
   const navigate = useNavigate();
 
   const handleEditClick = () => {
@@ -143,7 +143,9 @@ const EditResource = ({ url }: { url: string }) => {
       onClick={handleEditClick}
       className="h-8 w-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center"
     >
-      <EditIcon />
+      {
+        isAdmin? <EditIcon />: <BellIcon className="w-6 h-6 text-green-500"/>
+      }
     </button>
   );
 };

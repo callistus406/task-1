@@ -104,7 +104,7 @@ export const adminFindTransaction = async (transactionId: mongooseType) => {
   return response;
 };
 export const adminFindTransactionById = async (transactionId: mongooseType) => {
-  const response = await TransactionModel.findOne({ _id: transactionId });
+  const response = await TransactionModel.findOne({ _id: transactionId }).populate("user","last_name email");
   return response;
 };
 
