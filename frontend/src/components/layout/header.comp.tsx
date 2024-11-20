@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
     if (data) {
   
       
-      if (data?.role === 4451) {
+      if (data?.user.role === 4451) {
         seLinks({
         dashboard: "/dashboard/admin",
         profile: "/admin/profile",
