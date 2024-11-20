@@ -159,7 +159,8 @@ The backend development is **90% complete**, with testing remaining. Below is a 
 - **GET** `/admin/transaction/stat`  
   Retrieve transaction statistics for all users (Admin only).
 - **GET** `/admin/dashboard`  
-  Retrieve dashboard data for the admin.
+- **GET** `/admin/inv/analytics`  
+
 
 ---
 
