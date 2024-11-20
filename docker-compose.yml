@@ -18,7 +18,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - "5000:5000"
+      - "5100:5100"
     networks:
       - task-network
  
