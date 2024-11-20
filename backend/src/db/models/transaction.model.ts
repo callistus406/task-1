@@ -16,11 +16,11 @@ export type TransactionDocLean = mongoose.LeanDocument<TransactionDoc>;
 const TransactionSchema = new Schema<TransactionPoJo>(
   {
     wallet: { type: mongoose.Schema.Types.ObjectId, ref: "Wallet", required: true }, 
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "UserRecord", required: true }, 
     amount: { type: Number, required: true }, 
     type: { type: String, enum: ["DEPOSIT", "WITHDRAWAL"], required: true }, 
     status: { type: String, enum: ["PENDING", "APPROVED", "REJECTED"], default: "PENDING" }, 
-    admin: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
+    admin: { type: mongoose.Schema.Types.ObjectId, ref: "UserRecord" }, 
   },
   { timestamps: true }
 );

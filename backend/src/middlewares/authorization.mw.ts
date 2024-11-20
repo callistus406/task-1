@@ -32,7 +32,7 @@ function ensureAuthenticated(req: any, res: Response, next: NextFunction) {
   const user = req.user;
 
   if (
-    user.role === parseInt(config.roles.admin) ||
+   parseInt(user.role) === parseInt(config.roles.admin) ||
     parseInt(config.roles.investor)
   ) {
     return next();
@@ -45,7 +45,7 @@ function isAdmin(req: any, res: Response, next: NextFunction) {
 
   const user = req.user;
   console.log(user,"pp",config.roles.admin)
-  if (user.role === parseInt(config.roles.admin)) return next();
+  if (parseInt(user.role) === parseInt(config.roles.admin)) return next();
   return res.status(403).json({
     success: false,
     payload: {
@@ -56,7 +56,7 @@ function isAdmin(req: any, res: Response, next: NextFunction) {
 }
 function isInvestor(req: any, res: Response, next: NextFunction) {
   const user = req.user;
-  if (user.role === parseInt(config.roles.investor)) return next();
+  if (parseInt(user.role)=== parseInt(config.roles.investor)) return next();
   return res.status(403).json({
     success: false,
     payload: {

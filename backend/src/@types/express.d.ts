@@ -8,6 +8,7 @@ import {
     startTime: [number, number]
     user?: {
       userId: mongoose.Types.ObjectId,
+      walletId: mongoose.Types.ObjectId,
       email:string
     }
       data?:null,

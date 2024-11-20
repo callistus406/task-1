@@ -1,12 +1,12 @@
 import { mongooseType } from "../../@types/express";
 import { IQuery, ISubscription } from "../../@types/types";
-import SubscriptionModel from "../models/wallet.model";
+import SubscriptionModel from "../models/subscription.model";
 
 export const createSubscription = async (
   data: ISubscription,
-  skip?: number
 ) => {
-  const response = await SubscriptionModel.create(data);
+
+  const response = await SubscriptionModel.create({...data,plan:data.investmentPlan});
   return response;
 };
 
@@ -17,11 +17,10 @@ export const findSubscriptions = async (
 ) => {
   const totalDocuments = await SubscriptionModel.countDocuments();
   const subscriptions = await SubscriptionModel.find({ user: userId })
-    .sort({ [query.sort]: query.sortDirection as any })
+    .sort({ [query.sort]: query.sortDirection as any }).populate("plan","name")
     .skip(skip)
     .limit(query.size)
     .exec();
-
 
   return {
     success: true,
@@ -34,16 +33,16 @@ export const findSubscriptions = async (
 };
 export const adminFindSubscriptions = async (
   query: IQuery,
- 
+
   skip?: any
 ) => {
   const totalDocuments = await SubscriptionModel.countDocuments();
-  const subscriptions = await SubscriptionModel.find({  })
+  const subscriptions = await SubscriptionModel.find({})
+    .populate("user", "first_name last_name email")
     .sort({ [query.sort]: query.sortDirection as any })
     .skip(skip)
     .limit(query.size)
     .exec();
-
 
   return {
     success: true,
@@ -75,4 +74,51 @@ export const findSubscription = async (
     user: userId,
   });
   return response;
+};
+
+export const findSubscriptionByInvestmentId = async (id: mongooseType) => {
+  const response = await SubscriptionModel.findOne({
+    plan: id,
+  });
+  return response;
+};
+
+export const getSubscriptionsByUser = async () => {
+  return await SubscriptionModel.aggregate([
+    {
+      $group: {
+        _id: "$user",
+        totalSubscriptions: { $sum: 1 },
+        totalAmount: { $sum: "$amount" },
+        averageSubscriptionAmount: { $avg: "$amount" },
+        maxSubscriptionAmount: { $max: "$amount" }, 
+        minSubscriptionAmount: { $min: "$amount" }, 
+      },
+    },
+    {
+      $lookup: {
+        from: "userrecords", 
+        localField: "_id",
+        foreignField: "_id",
+        as: "userInfo",
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        userId: "$_id",
+        userName: { $arrayElemAt: ["$userInfo.name", 0] },
+        totalSubscriptions: 1,
+        totalAmount: 1,
+        averageSubscriptionAmount: 1,
+        maxSubscriptionAmount: 1,
+        minSubscriptionAmount: 1,
+      },
+    },
+    {
+      $sort: {
+        totalSubscriptions: -1,
+      },
+    },
+  ]);
 };

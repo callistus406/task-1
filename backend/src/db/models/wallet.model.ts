@@ -12,14 +12,13 @@ export type WalletDocLean = mongoose.LeanDocument<WalletDoc>;
 
 const WalletSchema = new Schema<WalletPoJo>(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true }, 
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "UserRecord", required: true, unique: true }, 
     balance: { type: Number, default: 0 }, 
     transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Transaction" }], 
   },
   { timestamps: true }
 );
 
-// Create the Wallet model
 const Wallet = mongoose.model<WalletDoc, WalletModel>("Wallet", WalletSchema);
 
 export default Wallet;

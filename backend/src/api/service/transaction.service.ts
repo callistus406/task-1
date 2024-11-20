@@ -6,10 +6,15 @@ import {
 } from "../../db/repository/wallet.repository";
 import {
   adminFindAllTransactions,
+  adminFindTransaction,
   adminFindTransactionById,
+  adminGetUserTransactionCounts,
   depositMoney,
   findAllTransactions,
   findTransaction,
+  getTransactionAnalytics,
+  getTransactionUserAnalytics,
+  getUserTransactionCounts,
   withdrawMoney,
 } from "../../db/repository/transaction.repository";
 import { IQuery } from "../../@types/types";
@@ -28,13 +33,13 @@ export const depositMoneyService = async (
 
   const wallet = await findWallet(userId);
   if (!wallet) throw createCustomError("Wallet not found.", 404);
- 
+
   const transaction = await depositMoney({
     userId,
     amount,
     walletId: wallet._id,
   });
-  return { message: "Deposit request submitted successfully.", transaction };
+  return  "Deposit request submitted successfully."
 };
 export const findAllTransactionService = async (
   query: IQuery,
@@ -73,7 +78,7 @@ export const adminFindAllTransactionService = async (
     sortDirection,
   };
   const skip = (page - 1) * size;
-  const response = await adminFindAllTransactions(preparedQuery,  skip);
+  const response = await adminFindAllTransactions(preparedQuery, skip);
   return response;
 };
 export const findTransactionService = async (
@@ -81,6 +86,18 @@ export const findTransactionService = async (
   userId: mongooseType
 ) => {
   const response = await findTransaction(transactionId, userId);
+  return response;
+};
+export const adminFindTransactionService = async (
+  transactionId: mongooseType,
+
+) => {
+
+  if (!transactionId || !isValidObjectId(transactionId)) {
+    throw createCustomError("Invalid transaction ID.", 422);
+  }
+
+  const response = await adminFindTransaction(transactionId);
   return response;
 };
 
@@ -100,50 +117,48 @@ export const adminHandleTransactionService = async (
     throw createCustomError("Invalid transaction ID.", 422);
   }
 
+  const transaction = await adminFindTransactionById(transactionId);
+  if (!transaction) throw createCustomError("Transaction not found.", 404);
+  if (transaction.status !== "PENDING") {
+    throw createCustomError("Transaction is not pending.", 400);
+  }
 
-    const transaction = await adminFindTransactionById(transactionId);
-    if (!transaction) throw createCustomError("Transaction not found.", 404);
-    if (transaction.status !== "PENDING") {
-      throw createCustomError("Transaction is not pending.", 400);
-    }
+  if (!["DEPOSIT", "WITHDRAWAL"].includes(transaction.type)) {
+    throw createCustomError("Invalid transaction type.", 400);
+  }
 
-    if (!["DEPOSIT", "WITHDRAWAL"].includes(transaction.type)) {
-      throw createCustomError("Invalid transaction type.", 400);
-    }
+  if (action === "approve") {
+    transaction.status = "APPROVED";
+    transaction.admin = adminId;
+    const wallet = await findUserWallet(transaction.wallet);
 
-    if (action === "approve") {
-      transaction.status = "APPROVED";
-      transaction.admin = adminId; 
+    if (!wallet) throw createCustomError("Wallet not found.", 404);
 
-      const wallet = await findUserWallet(transaction.wallet);
-      if (!wallet) throw createCustomError("Wallet not found.", 404);
-
-      if (transaction.type === "DEPOSIT") {
-        wallet.balance += transaction.amount; 
-      } else if (transaction.type === "WITHDRAWAL") {
-        if (wallet.balance < transaction.amount) {
-          throw createCustomError(
-            "Insufficient wallet balance for withdrawal.",
-            400
-          );
-        }
-        wallet.balance -= transaction.amount; 
+    if (transaction.type === "DEPOSIT") {
+      wallet.balance += transaction.amount;
+    } else if (transaction.type === "WITHDRAWAL") {
+      if (wallet.balance < transaction.amount) {
+        throw createCustomError(
+          "Insufficient wallet balance for withdrawal.",
+          400
+        );
       }
-
-      await transaction.save();
-      await wallet.save();
-
-      return { message: "Transaction approved and wallet updated.", wallet };
-    } else if (action === "reject") {
-      transaction.status = "REJECTED";
-      transaction.admin = adminId; 
-      await transaction.save();
-
-      return { message: "Transaction rejected.", transaction };
-    } else {
-      throw createCustomError("Invalid action provided.", 400);
+      wallet.balance -= transaction.amount;
     }
 
+    await transaction.save();
+    await wallet.save();
+
+    return { message: "Transaction approved and wallet updated.", wallet };
+  } else if (action === "reject") {
+    transaction.status = "REJECTED";
+    transaction.admin = adminId;
+    await transaction.save();
+
+    return { message: "Transaction rejected.", transaction };
+  } else {
+    throw createCustomError("Invalid action provided.", 400);
+  }
 };
 
 export const requestWithdrawalService = async (
@@ -164,7 +179,7 @@ export const requestWithdrawalService = async (
     walletId: wallet._id,
   });
 
-  return { message: "Withdrawal request submitted successfully.", transaction };
+  return  "Withdrawal request submitted successfully." 
 };
 
 export const adminHandleWithdrawalApprovalService = async (
@@ -172,37 +187,58 @@ export const adminHandleWithdrawalApprovalService = async (
   adminId: mongooseType,
   action: "APPROVE" | "REJECT"
 ) => {
-    const transaction = await adminFindTransactionById(transactionId);
-    if (!transaction) throw createCustomError("Transaction not found.", 404);
-    if (transaction.status !== "PENDING")
-      throw createCustomError("Transaction is not pending.", 400);
+  const transaction = await adminFindTransactionById(transactionId);
+  if (!transaction) throw createCustomError("Transaction not found.", 404);
+  if (transaction.status !== "PENDING")
+    throw createCustomError("Transaction is not pending.", 400);
 
-    if (transaction.type !== "WITHDRAWAL")
-      throw createCustomError(
-        "Only withdrawal transactions can be managed.",
-        400
-      );
+  if (transaction.type !== "WITHDRAWAL")
+    throw createCustomError(
+      "Only withdrawal transactions can be managed.",
+      400
+    );
 
-    if (action === "APPROVE") {
-      const wallet = await findUserWallet(transaction.wallet);
-      if (!wallet) throw createCustomError("Wallet not found.", 404);
-      if (wallet.balance < transaction.amount)
-        throw createCustomError("Insufficient balance in the wallet.", 400);
+  if (action === "APPROVE") {
+    const wallet = await findUserWallet(transaction.wallet);
+    if (!wallet) throw createCustomError("Wallet not found.", 404);
+    if (wallet.balance < transaction.amount)
+      throw createCustomError("Insufficient balance in the wallet.", 400);
 
-      wallet.balance -= transaction.amount;
-      await wallet.save();
+    wallet.balance -= transaction.amount;
+    await wallet.save();
 
-      transaction.status = "APPROVED";
-      transaction.admin = adminId;
-      await transaction.save();
+    transaction.status = "APPROVED";
+    transaction.admin = adminId;
+    await transaction.save();
 
-      return { message: "Withdrawal approved and wallet updated.", wallet };
-    } else if (action === "REJECT") {
-      transaction.status = "REJECTED";
-      transaction.admin = adminId;
-      await transaction.save();
+    return { message: "Withdrawal approved and wallet updated.", wallet };
+  } else if (action === "REJECT") {
+    transaction.status = "REJECTED";
+    transaction.admin = adminId;
+    await transaction.save();
 
-      return { message: "Withdrawal request rejected.", transaction };
-    }
- 
+    return { message: "Withdrawal request rejected.", transaction };
+  }
 };
+
+
+export const getTransactionAnalyticsService = async () => {
+  const response = await getTransactionAnalytics()
+
+  return response
+}
+export const getTransactionUserAnalyticsService = async (userId:mongooseType) => {
+  const response = await getTransactionUserAnalytics(userId)
+
+  return response
+}
+export const getUserTransactionCountsService = async (userId: mongooseType) => {
+  const response = await getUserTransactionCounts(userId)
+
+  return response
+}
+export const adminGetUserTransactionCountsService = async () => {
+  const response = await adminGetUserTransactionCounts()
+
+  return response
+}

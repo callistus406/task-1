@@ -9,67 +9,73 @@ import UsersModel from "../../db/models/user.model";
 import { comparePasswords } from "../../utils/bcrypt";
 import constants from "../../utils/constants";
 import { mongooseType } from "../../@types/express";
-import { findUserById } from "../../db/repository/user.repository";
+import {
+  findUserByEmail,
+  findUserById,
+} from "../../db/repository/user.repository";
 import config from "../../config/config";
+import {
+  findUserWallet,
+  findWalletByUser,
+} from "../../db/repository/wallet.repository";
 
-export const logoutService = async (userId:mongooseType) => {
-  
+export const logoutService = async (userId: mongooseType) => {
   const foundUser = await findUserById(userId);
   if (!foundUser) {
-     throw createCustomError("Unable to process request", 400);
+    throw createCustomError("Unable to process request", 400);
   }
   await foundUser.updateOne({ $set: { refreshToken: [] } });
-  return true
-}
+  return true;
+};
 
-export const loginService = async (email:string,password:string) => {
-    // if (req.cookies["X-Refresh-Token"])
-    //   throw createCustomError("You're already logged in", 400);
-  
-    const user = await UsersModel.findOne({ email });
-    // console.log(user);
-    if (!user) throw createCustomError("Invalid credentials", 404);
+export const loginService = async (email: string, password: string) => {
+  // if (req.cookies["X-Refresh-Token"])
+  //   throw createCustomError("You're already logged in", 400);
 
-    const isMatch = await comparePasswords(password, user.hashed_password);
-    if (!isMatch) throw createCustomError("Invalid email or password", 400);
+  const user = await findUserByEmail(email);
 
-    if (!user.is_verified)
-      throw createCustomError(
-        "Your account is not verified. Please request and OTP to verify your account",
-        400
-      );
-    const payload = {
-      email: user.email,
-      userId: user._id,
-      role:user.role,
-    };
+  // console.log(user);
+  if (!user) throw createCustomError("Invalid credentials", 404);
 
-    const accessToken = jwt.sign(
-      { user: payload },
-      constants.jwt.accessTokenSecret,
-      { expiresIn: "1d" }
-    );
-    const refreshToken = jwt.sign(
-      { _id: user._id, role: user.role },
-      constants.jwt.refreshTokenSecret,
-      {
-        expiresIn: "1d",
-      }
+  const wallet = await findWalletByUser(user._id);
+  const isMatch = await comparePasswords(password, user.hashed_password);
+  if (!isMatch) throw createCustomError("Invalid email or password", 400);
+
+  if (!user.is_verified)
+    throw createCustomError(
+      "Your account is not verified. Please request and OTP to verify your account",
+      400
     );
 
-    let newRefreshTokenArray = user.refresh_token.filter(
-      (rt) => rt !== refreshToken
-    );
-    newRefreshTokenArray = [...newRefreshTokenArray, refreshToken];
+  const payload = {
+    email: user.email,
+    userId: user._id,
+    role: user.role,
+    walletId: wallet ? wallet._id : null,
+  };
 
-    user.refresh_token = newRefreshTokenArray;
-    await user.save();
-return   {
-  ...payload,
-  token: accessToken,
-}
-   
-  }
+  const accessToken = jwt.sign(
+    { user: payload },
+    constants.jwt.accessTokenSecret,
+    { expiresIn: "1d" }
+  );
+  const refreshToken = jwt.sign(
+    { _id: user._id, role: user.role },
+    constants.jwt.refreshTokenSecret,
+    {
+      expiresIn: "1d",
+    }
+  );
 
+  let newRefreshTokenArray = user.refresh_token.filter(
+    (rt) => rt !== refreshToken
+  );
+  newRefreshTokenArray = [...newRefreshTokenArray, refreshToken];
 
-
+  user.refresh_token = newRefreshTokenArray;
+  await user.save();
+  return {
+    user: payload,
+    token: accessToken,
+  };
+};

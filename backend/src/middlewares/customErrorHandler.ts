@@ -25,7 +25,7 @@ const handleCustomError = (
   if (error instanceof CustomError) {
     return res
       .status(error.statusCode)
-      .json({ success: false, payload: error.message });
+      .json({ success: false, error: error.message });
   }
   console.log(error)
   return res.status(500).json({ success: false, payload: "server error" });

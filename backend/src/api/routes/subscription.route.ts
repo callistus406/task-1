@@ -30,7 +30,7 @@ router.get(
   "/admin/plans/subscriptions",
   AuthorizationMw.verifyJWT,
   AuthorizationMw.ensureAuthenticated,
-  AuthorizationMw.isInvestor,
+  AuthorizationMw.isAdmin,
   adminFindSubScriptionsCtrl
 );
 router.delete(

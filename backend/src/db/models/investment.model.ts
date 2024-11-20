@@ -20,7 +20,7 @@ const InvestmentPlanSchema = new Schema<InvestmentPlanPoJo>(
     minimumAmount: { type: Number, required: true },
     interestRate: { type: Number, required: true },
     durationInMonths: { type: Number, required: true },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "UserRecord", required: true }, 
   },
   { timestamps: true }
 );

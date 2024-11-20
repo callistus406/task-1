@@ -3,6 +3,7 @@ import {
   createSubscription,
   deleteSubscription,
   findSubscription,
+  findSubscriptionByInvestmentId,
   findSubscriptions,
 } from "../../db/repository/subscription.respositry";
 import { IQuery, ISubscription } from "../../@types/types";
@@ -11,6 +12,10 @@ import { mongooseType } from "../../@types/express";
 import { isValidObjectId } from "mongoose";
 
 export const subscribeToPlanService = async (data: ISubscription) => {
+
+  const isFound = await findSubscriptionByInvestmentId(data.investmentPlan);
+  if (isFound)
+    throw createCustomError("Sorry you can't subscribe twice", 409);
   const response = await createSubscription(data);
 
   if (!response)

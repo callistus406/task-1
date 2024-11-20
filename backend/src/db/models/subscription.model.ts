@@ -13,7 +13,7 @@ export type SubscriptionDocLean = mongoose.LeanDocument<SubscriptionDoc>;
 
 const SubscriptionSchema = new mongoose.Schema<SubscriptionPoJo>(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "UserRecord", required: true },
     plan: { type: mongoose.Schema.Types.ObjectId, ref: "InvestmentPlan", required: true },
     amount: { type: Number, required: true },
     startDate: { type: Date, default: Date.now },

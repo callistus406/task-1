@@ -34,9 +34,8 @@ export const userProfileCtrl = [
 ];
 export const findWalletCtrl = [
   asyncWrapper(async (req: Request, res: Response) => {
-    const { userId } = req.user;
-    const response = await findWalletService(userId);
-
+    const { userId,walletId } = req.user;
+    const response = await findWalletService(walletId);
     res.status(200).json({
       success: true,
       payload: response,
