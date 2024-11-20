@@ -87,7 +87,7 @@ function App() {
             path="/create-investment-plan"
             element={<CreateInvestment />}
           />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/admin/profile" element={<Profile />} />
         </Route>
       </Route>
 
@@ -124,6 +124,12 @@ function App() {
               <TableContextProvider>
                 <Transactions />
               </TableContextProvider>
+            }
+              />
+              <Route
+            path="/profile"
+            element={
+                <Profile />
             }
           />
           <Route
