@@ -39,7 +39,7 @@ export const depositMoneyService = async (
     amount,
     walletId: wallet._id,
   });
-  return  "Deposit request submitted successfully."
+  return "Deposit request submitted successfully.";
 };
 export const findAllTransactionService = async (
   query: IQuery,
@@ -89,10 +89,8 @@ export const findTransactionService = async (
   return response;
 };
 export const adminFindTransactionService = async (
-  transactionId: mongooseType,
-
+  transactionId: mongooseType
 ) => {
-
   if (!transactionId || !isValidObjectId(transactionId)) {
     throw createCustomError("Invalid transaction ID.", 422);
   }
@@ -149,13 +147,13 @@ export const adminHandleTransactionService = async (
     await transaction.save();
     await wallet.save();
 
-    return { message: "Transaction approved and wallet updated.", wallet };
+    return  "Transaction approved and wallet updated."
   } else if (action === "reject") {
     transaction.status = "REJECTED";
     transaction.admin = adminId;
     await transaction.save();
 
-    return { message: "Transaction rejected.", transaction };
+    return "Transaction rejected.";
   } else {
     throw createCustomError("Invalid action provided.", 400);
   }
@@ -179,7 +177,7 @@ export const requestWithdrawalService = async (
     walletId: wallet._id,
   });
 
-  return  "Withdrawal request submitted successfully." 
+  return "Withdrawal request submitted successfully.";
 };
 
 export const adminHandleWithdrawalApprovalService = async (
@@ -211,34 +209,35 @@ export const adminHandleWithdrawalApprovalService = async (
     transaction.admin = adminId;
     await transaction.save();
 
-    return { message: "Withdrawal approved and wallet updated.", wallet };
+    return "Withdrawal approved and wallet updated.";
   } else if (action === "REJECT") {
     transaction.status = "REJECTED";
     transaction.admin = adminId;
     await transaction.save();
 
-    return { message: "Withdrawal request rejected.", transaction };
+    return "Withdrawal request rejected.";
   }
 };
 
-
 export const getTransactionAnalyticsService = async () => {
-  const response = await getTransactionAnalytics()
+  const response = await getTransactionAnalytics();
 
-  return response
-}
-export const getTransactionUserAnalyticsService = async (userId:mongooseType) => {
-  const response = await getTransactionUserAnalytics(userId)
+  return response;
+};
+export const getTransactionUserAnalyticsService = async (
+  userId: mongooseType
+) => {
+  const response = await getTransactionUserAnalytics(userId);
 
-  return response
-}
+  return response;
+};
 export const getUserTransactionCountsService = async (userId: mongooseType) => {
-  const response = await getUserTransactionCounts(userId)
+  const response = await getUserTransactionCounts(userId);
 
-  return response
-}
+  return response;
+};
 export const adminGetUserTransactionCountsService = async () => {
-  const response = await adminGetUserTransactionCounts()
+  const response = await adminGetUserTransactionCounts();
 
-  return response
-}
+  return response;
+};
